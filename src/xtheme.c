@@ -62,7 +62,7 @@ property* properties[] = {
   P(TYPE_SET, "color italic ", "*colorITMode: true\n*colorIT: %s\n", 0, 0),
   P(TYPE_SET, "color underline ", "*colorULMode: true\n*colorUL: %s\n", 0, 0),
   P(TYPE_SET, "font face ", "*faceName: %s\n", 0, 0),
-  P(TYPE_SET, "font size ", "*font: *-fixed-*-*-%s-*\n", 0, 0),
+  P(TYPE_SET, "font size ", "*faceSize: %s\n", 0, 0),
   P(TYPE_LIST, "colors multi", 0, &take_colors_multi, 8),
   P(TYPE_LIST, "colors", 0, &take_colors, 16)
 };
