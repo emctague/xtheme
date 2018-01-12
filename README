@@ -113,6 +113,9 @@ OPTIONS THAT CAN BE SPECIFIED:
  - cursor blink (Flag)
    Makes the cursor blink.
 
+ - use clipboard (Flag)
+   Enables using Ctrl+Shift+V and Ctrl+Shift+C to copy and paste.
+
 
 
 Copyright / Licensing:
