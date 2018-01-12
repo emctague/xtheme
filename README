@@ -106,7 +106,7 @@ OPTIONS THAT CAN BE SPECIFIED:
  - font size (Value)
    Sets the font's size, in points, to the value specified.
 
- - padding (value)
+ - padding (Value)
    Sets the padding around the outer edges of the terminal, in pixels, to the
    value specified
 
