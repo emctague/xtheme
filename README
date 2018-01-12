@@ -110,6 +110,11 @@ OPTIONS THAT CAN BE SPECIFIED:
    Sets the padding around the outer edges of the terminal, in pixels, to the
    value specified
 
+ - use scrollbar (Value)
+   Set to true to enable the scrollbar, or false to disable. This isn't a
+   flag because the default can be a bit more inconsistent, so we need the
+   ability to turn it off or on.
+
  - cursor blink (Flag)
    Makes the cursor blink.
 

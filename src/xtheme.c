@@ -54,6 +54,7 @@ property* properties[] = {
       "*VT100*Translations: #override \\\n"
       "    Ctrl Shift <Key>V: insert-selection(CLIPBOARD) \\n\\\n"
       "    Ctrl Shift <Key>C: copy-selection(CLIPBOARD)\n", 0, 0),
+  P(TYPE_SET, "use scrollbar ", "*scrollBar: %s\n", 0, 0),
   P(TYPE_SET, "padding ", "*internalBorder: %s\n", 0, 0),
   P(TYPE_SET, "color fg ", "*foreground: %s\n", 0, 0),
   P(TYPE_SET, "color bg ", "*background: %s\n", 0, 0),

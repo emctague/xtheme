@@ -1,6 +1,7 @@
 Example XTheme (the one I use:)
 
 use clipboard
+use scrollbar false
 
 font face Ubuntu Mono
 font size 16
