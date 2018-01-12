@@ -4,8 +4,10 @@ by Ethan McTague <ethan@tague.me>
 January 12, 2018
 See end of file for copyright information.
 
-Themeing tool - generates .Xresources and .Xdefaults based on a simpler
-theme configuration file format than the standard XRDB one.
+Generates .Xresources and .Xdefaults based on a simpler theme configuration
+file format than the standard XRDB one, made specifically for themeing.
+
+
 
 Usage: xtheme <your config file>
 
@@ -17,6 +19,21 @@ $ make
 
 Installing:
 # make install
+
+
+
+Why?
+
+Because I've gotten tired of searching for the options I want for my XResources
+file - the names tend to be a bit weird, they're long and repetitive, and for
+some reason various sources of documentation seem to disagree on what options
+are available to use. To solve this problem, I wrote my own, simpler format
+that includes only themeing-related options that a sane person would actually
+want to use. I also documented each option clearly below.
+
+
+
+How to use:
 
 The configuration file is in an extremely simple format designed to be as
 human-readable and concise as possible. It serves as a shorthand to the
@@ -96,6 +113,9 @@ OPTIONS THAT CAN BE SPECIFIED:
  - cursor blink (Flag)
    Makes the cursor blink.
 
+
+
+Copyright / Licensing:
 
 Source Code, associated/accompanying project files, documentation, and binaries
 resulting from the compilation of source code are Copyright 2018 Ethan McTague.
