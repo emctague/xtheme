@@ -1,0 +1,106 @@
+xtheme - An XTerm/UXTerm/RXVT/URXVT themeing tool
+
+by Ethan McTague <ethan@tague.me>
+January 12, 2018
+See end of file for copyright information.
+
+Themeing tool - generates .Xresources and .Xdefaults based on a simpler
+theme configuration file format than the standard XRDB one.
+
+Usage: xtheme <your config file>
+
+Dependencies:
+gcc, glibc (you probably already have both of these.)
+
+Building:
+$ make
+
+Installing:
+# make install
+
+The configuration file is in an extremely simple format designed to be as
+human-readable and concise as possible. It serves as a shorthand to the
+somewhat longer XRDB format that is typically required to customize XTerm.
+
+When executed with the path to a configuration file, xtheme will parse the file,
+generate a .Xresources file in your home directory, symlink it to .Xdefaults,
+and then execute `xrdb -merge .Xresources`. After this, you must restart xterm
+to see the changes.
+
+There are three types of options that can be set:
+
+ - Flags
+   These options are simply listed on a line, and they enable or disable a
+   certain feature. No value is given for this sort of option.
+
+ - Values
+   These options have a specific value that should come after them on the
+   same line, separated by a space.
+
+ - Lists
+   These options are given on a line on their own, followed by a certain number
+   of lines, each containing a single value for the list.
+
+Please note that there cannot be extra indentation or whitespace on property
+lines, and lists cannot have empty lines in between the list entries.
+
+Any lines that are not valid configuration options will simply be silently
+ignored, allowing for any non-option line to serve as a comment.
+
+Colors must be specified in XRDB-compatible formats: Hex colors (#xxxxxx) and
+basic color values (red, green, blue, etc.) are recommended.
+
+OPTIONS THAT CAN BE SPECIFIED:
+
+ - color fg (Value)
+   Sets the foreground color to the one specified.
+
+ - color bg (Value)
+   Sets the background color to the one specified.
+
+ - color cursor (Value)
+   Sets the cursor color to the one specified.
+
+ - color bold (Value)
+   Sets the bold color to the one specified. This will also tell XTerm to use
+   colored text for "bold" instead of actual bold text.
+
+ - color italic (Value)
+   Sets the italic color to the one specified. This will also tell XTerm to use
+   colored text for "italic" instead of actual italic text.
+
+ - color underline (Value)
+   Sets the underline color to the one specified. This will also tell XTerm to
+   use colored text for "underline" instead of actual underlined text.
+
+ - colors (List)
+   Sets all 16 terminal colors (color0 to color15). These colors must be
+   specified in proper order on the following lines. 16 lines of color values
+   must follow.
+
+ - colors multi (List)
+   Sets all 16 terminal colors (color0 to color15), except the first 8 are
+   identical to the last 8 (color0 is the same as color8, color1 is the same
+   as color9, etc.) Thus, only 8 lines of color values must follow.
+
+ - font face (Value)
+   Sets the font to the one whose name is specified.
+
+ - font size (Value)
+   Sets the font's size, in points, to the value specified.
+
+ - padding (value)
+   Sets the padding around the outer edges of the terminal, in pixels, to the
+   value specified
+
+ - cursor blink (Flag)
+   Makes the cursor blink.
+
+
+Source Code, associated/accompanying project files, documentation, and binaries
+resulting from the compilation of source code are Copyright 2018 Ethan McTague.
+
+Source code, associated/accompanying project files, documentation, and binaries
+resulting from the compilation of source code licensed under the BSD 2-Clause
+License, see accompanying "COPYING" file for license terms.
+

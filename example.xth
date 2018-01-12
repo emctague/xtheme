@@ -1,0 +1,22 @@
+Example XTheme (the one I use:)
+
+font face Ubuntu Mono
+font size 16
+padding 25
+
+colors multi
+#000d18
+#e89393
+#9ece9e
+#f0dfaf
+#8cd0d3
+#c0bed1
+#dfaf8f
+#efefef
+
+color fg #dcdccc
+color bg #1f1f1f
+color cursor #8faf9f
+color bold #ffcfaf
+color italic #ccdc90
+color underline #80d4aa
