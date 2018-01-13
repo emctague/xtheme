@@ -27,6 +27,10 @@ are available to use. To solve this problem, I wrote my own, simpler format
 that includes only themeing-related options that a sane person would actually
 want to use. I also documented each option clearly below.
 
+Frankly, if you're comfortable editing your regular .Xresources file and don't
+plan on changing it often, you probably shouldn't bother with this. I made it
+for myself, to fix a problem I have personally,  and figured I'd share it.
+
 
 
 Writing a Theme:
