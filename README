@@ -1,18 +1,14 @@
 xtheme - An XTerm/UXTerm/RXVT/URXVT themeing tool
-
-by Ethan McTague <ethan@tague.me>
-January 12, 2018
-See end of file for copyright information.
+gh: emctague/xtheme
 
 Generates .Xresources and .Xdefaults based on a simpler theme configuration
-file format than the standard XRDB one, made specifically for themeing.
+file format than the standard XRDB one. Made specifically for themeing.
 
 
-
-Usage: xtheme <your config file>
+Usage: xtheme <file>
 
 Dependencies:
-gcc, glibc (you probably already have both of these.)
+All you need is gcc on a linux system.
 
 Building:
 $ make
@@ -33,16 +29,11 @@ want to use. I also documented each option clearly below.
 
 
 
-How to use:
+Writing a Theme:
 
-The configuration file is in an extremely simple format designed to be as
-human-readable and concise as possible. It serves as a shorthand to the
-somewhat longer XRDB format that is typically required to customize XTerm.
-
-When executed with the path to a configuration file, xtheme will parse the file,
-generate a .Xresources file in your home directory, symlink it to .Xdefaults,
-and then execute `xrdb -merge .Xresources`. After this, you must restart xterm
-to see the changes.
+A theme/config file consists of lines containing a property, along with any
+other information that particular property requires. See `example.xth` for an
+example configuration.
 
 There are three types of options that can be set:
 
@@ -58,16 +49,16 @@ There are three types of options that can be set:
    These options are given on a line on their own, followed by a certain number
    of lines, each containing a single value for the list.
 
-Please note that there cannot be extra indentation or whitespace on property
-lines, and lists cannot have empty lines in between the list entries.
+Please note:
 
-Any lines that are not valid configuration options will simply be silently
-ignored, allowing for any non-option line to serve as a comment.
+ - Colors must be in hex (#xxxxxx) or basic name (red, green, blue, etc.) format.
 
-Colors must be specified in XRDB-compatible formats: Hex colors (#xxxxxx) and
-basic color values (red, green, blue, etc.) are recommended.
+ - Any lines that aren't valid config options will be silently ignored, so you
+   don't need any particular formatting to make a comment.
 
-OPTIONS THAT CAN BE SPECIFIED:
+ - Indentation of a line will probably result in xtheme failing to recognize the option.
+
+Options:
 
  - color fg (Value)
    Sets the foreground color to the one specified.
