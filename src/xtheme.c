@@ -10,71 +10,48 @@
 #include <string.h>
 #include <unistd.h>
 
+typedef enum {
+	PropType_Boolean, // A single boolean value
+	PropType_String,  // A single string value
+	PropType_List     // An array of property (string) values
+} PropType;
 
-// Reading modes.
-#define MODE_READ 0  // Currently reading basic config properties.
-#define MODE_LIST 1  // Reading list items.
+typedef struct {
+	PropType type;            // The type of this property
+	const char* name;		  // The property name
+	const char* output;       // Output when set to true, or for list items (%2$d = the current number) (%1$s = the value given)
+	const char* output_false; // Output for booleans that have been set to false.
+} Prop;
 
-// Types of properties.
-#define TYPE_ENABLE 0  // Turns something on, without giving a value.
-#define TYPE_SET    1  // Single argument on the same line.
-#define TYPE_LIST   2  // Multiple arguments on lines following it.
-
+// Check if the given `string` starts with `thing`
 int startsWith(const char* thing, const char* string) {
   return !strncmp(thing, string, strlen(thing));
 }
 
-typedef void (*cbptr)(int, const char*);
-
-// Each property.
-typedef struct {
-  int type;            // Type int (see "Types of properties" section, above.)
-  const char* name;    // Name of this property.
-  const char* format;  // Output format string for enable and set types.
-  cbptr func; // Callback for TYPE_LIST type.
-  int listLength;        // Number of list elements needed.
-} property;
-
-#define P(AA, AB, AC, AD, AE) &(property){ AA, AB, AC, AD, AE }
-
-#define BUF_SIZE 128
-char buf[BUF_SIZE];
-
-void take_colors (int i, const char* c) {
-  snprintf(buf, BUF_SIZE, "*color%d: %s\n", i, c);
-}
-
-void take_colors_multi (int i, const char* c) {
-  snprintf(buf, BUF_SIZE, "*color%d: %s\n*color%d: %s\n", i, c, i + 8, c);
-}
-
-property* properties[] = {
-  P(TYPE_ENABLE, "cursor blink", "*cursorBlink: true\n", 0, 0),
-  P(TYPE_ENABLE, "use clipboard",
-      "*VT100*Translations: #override \\\n"
+Prop properties[] = {
+	{ PropType_Boolean, "cursor blink", "*cursorBlink: true\n", "*cursorBlink: false\n" },
+	{ PropType_Boolean, "use clipboard", "*VT100*Translations: #override \\\n"
       "    Ctrl Shift <Key>V: insert-selection(CLIPBOARD) \\n\\\n"
-      "    Ctrl Shift <Key>C: copy-selection(CLIPBOARD)\n", 0, 0),
-  P(TYPE_SET, "use scrollbar ", "*scrollBar: %s\n", 0, 0),
-  P(TYPE_SET, "padding ", "*internalBorder: %s\n", 0, 0),
-  P(TYPE_SET, "color fg ", "*foreground: %s\n", 0, 0),
-  P(TYPE_SET, "color bg ", "*background: %s\n", 0, 0),
-  P(TYPE_SET, "color cursor ", "*cursorColor: %s\n", 0, 0),
-  P(TYPE_SET, "color bold ", "*colorBFMode: true\n*colorBD: %s\n", 0, 0),
-  P(TYPE_SET, "color italic ", "*colorITMode: true\n*colorIT: %s\n", 0, 0),
-  P(TYPE_SET, "color underline ", "*colorULMode: true\n*colorUL: %s\n", 0, 0),
-  P(TYPE_SET, "font face ", "*faceName: %s\n", 0, 0),
-  P(TYPE_SET, "font size ", "*faceSize: %s\n", 0, 0),
-  P(TYPE_LIST, "colors multi", 0, &take_colors_multi, 8),
-  P(TYPE_LIST, "colors", 0, &take_colors, 16)
+      "    Ctrl Shift <Key>C: copy-selection(CLIPBOARD)\n", "" },
+    { PropType_Boolean, "use scrollbar", "*scrollBar: true\n", "*scrollBar: false\n" },
+    { PropType_String, "padding", "*internalBorder: %1$s\n", "" },
+    { PropType_String, "color fg", "*foreground: %1$s\n", "" },
+    { PropType_String, "color bg", "*background: %1$s\n", "" },
+    { PropType_String, "color cursor", "*cursorColor: %1$s\n", "" },
+    { PropType_String, "color bold", "*colorBFMode: true\n*colorBD: %1$s\n", "" },
+    { PropType_String, "color italic", "*colorITMode: true\n*colorIT: %1$s\n", "" },
+    { PropType_String, "color underline", "*colorULMode: true\n*colorUL: %1$s\n", "" },
+    { PropType_String, "font face", "*faceName: %s\n", "" },
+    { PropType_String, "font size", "*faceSize: %s\n", "" },
+    { PropType_List, "colors", "*color%2$d: %1$s\n", "" }
 };
 
-int propSize = sizeof(properties) / sizeof(properties[0]);
+int propSize = sizeof(properties) / sizeof(Prop);
 
 int main (int argc, char* argv[]) {
-  
-  // Ensure proper arguments.
-  if (argc < 2) {
-    fputs("Supply a single argument, the path to the config file.\n", stderr);
+  // Ensure file is supplied
+  if (argc != 2) {
+    fprintf(stderr, "Usage: %s [file]\n", argv[0]);
     return 1;
   }
 
@@ -83,15 +60,10 @@ int main (int argc, char* argv[]) {
   const char* home = pw->pw_dir;
 
   const char* file = "/.Xresources";
-  const char* file2 = "/.Xdefaults";
 
   char* outpath = malloc(strlen(home) + strlen(file) + 1);
   strcpy(outpath, home);
   strcat(outpath, file);
-
-  char* outpath2 = malloc(strlen(home) + strlen(file2) + 1);
-  strcpy(outpath2, home);
-  strcat(outpath2, file2);
 
   // Open the given config file.
   FILE* config = fopen(argv[1], "r");
@@ -107,78 +79,47 @@ int main (int argc, char* argv[]) {
   size_t length = 0;
   size_t read;
 
-  int mode = MODE_READ;
-  int listIndex;
-  int listLength;
-  cbptr listAction;
-
   // Read through each config line.
   while ((read = getline(&line, &length, config)) != -1) {
-
     line[strlen(line) - 1] = 0;
 
-    switch (mode) {
+    for (int i = 0; i < propSize; i++) {
+    	int j = 0;
 
-    // Identify options.
-    case MODE_READ:
-      for (int i = 0; i < propSize; i++) {
-        property* p = properties[i];
-
-        switch (p->type) {
-        case TYPE_ENABLE:
-          if (!strcmp(p->name, line)) {
-            fputs(p->format, out);
-            goto nextline;
-          }
-          break;
-        case TYPE_SET:
-          if (startsWith(p->name, line)) {
-            char* target = &line[strlen(p->name)];
-            fprintf(out, p->format, target);
-            goto nextline;
-          }
-          break;
-        case TYPE_LIST:
-          if (!strcmp(p->name, line)) {
-            mode = MODE_LIST;
-            listAction = p->func;
-            listLength = p->listLength;
-            listIndex = 0;
-            goto nextline;
-          }
-          break;
-        }
-      }
-      break;
-
-
-    case MODE_LIST:
-
-      listAction(listIndex, line);
-      fputs(buf, out);
-      listIndex++;
-
-      if (listIndex >= listLength)
-        mode = MODE_READ;
-
-      break;
-    }
-
-nextline:
+    	if (startsWith(properties[i].name, line)) {
+    		switch (properties[i].type) {
+			case PropType_String:
+				fprintf (out, properties[i].output, &line[strlen(properties[i].name) + 1]);
+				goto ctnu;
+				break;
+			case PropType_Boolean:
+				if (!startsWith("false", &line[strlen(properties[i].name) + 1]))
+					fprintf (out, properties[i].output);
+				else
+					fprintf (out, properties[i].output_false);
+				goto ctnu;
+				break;
+			case PropType_List:
+				while ((read  = getline(&line, &length, config)) != -1) {
+					line[strlen(line) - 1] = 0;
+					if (!strcmp(line, "")) break;
+					fprintf(out, properties[i].output, line, j++);
+				}
+				goto ctnu;
+				break;
+    		}
+    	}
+    }    
+    ctnu:
     continue;
-    
   }
 
   fclose(config);
   fclose(out);
-  if (line) free(line);
-
-  // Link ~/.Xdefaults to ~/.Xresources
-  symlink(outpath, outpath2);
+  free(line);
 
   // Merge.
   system("xrdb -merge ~/.Xresources");
-
   puts("Updated, restart XTerm to see changes.");
 
   return 0;

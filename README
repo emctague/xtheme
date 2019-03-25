@@ -90,11 +90,6 @@ Options:
    specified in proper order on the following lines. 16 lines of color values
    must follow.
 
- - colors multi (List)
-   Sets all 16 terminal colors (color0 to color15), except the first 8 are
-   identical to the last 8 (color0 is the same as color8, color1 is the same
-   as color9, etc.) Thus, only 8 lines of color values must follow.
-
  - font face (Value)
    Sets the font to the one whose name is specified.
 
