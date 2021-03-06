@@ -94,9 +94,9 @@ int main (int argc, char* argv[]) {
 				break;
 			case PropType_Boolean:
 				if (!startsWith("false", &line[strlen(properties[i].name) + 1]))
-					fprintf (out, properties[i].output);
+					fprintf (out, "%s", properties[i].output);
 				else
-					fprintf (out, properties[i].output_false);
+					fprintf (out, "%s", properties[i].output_false);
 				goto ctnu;
 				break;
 			case PropType_List:
